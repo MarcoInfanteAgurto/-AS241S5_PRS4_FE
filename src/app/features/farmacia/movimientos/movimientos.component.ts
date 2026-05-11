@@ -22,21 +22,22 @@ interface Movimiento {
 })
 export class MovimientosComponent {
   Math = Math;
-  
+
   movimientos: Movimiento[] = [];
   filteredMovimientos: Movimiento[] = [];
-  
+
   searchTerm: string = '';
   selectedTipo: string = '';
   selectedFecha: string = '';
-  
+
   showModal: boolean = false;
   isEditMode: boolean = false;
   currentMovimiento: Partial<Movimiento> = {};
-  
+  openMenuId: string | null = null;
+
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  
+
   stats = {
     total: 0,
     entradas: 0,
@@ -51,16 +52,16 @@ export class MovimientosComponent {
 
   applyFilters() {
     this.filteredMovimientos = this.movimientos.filter(mov => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         mov.medicamento.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         mov.responsable.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
+
       const matchesTipo = !this.selectedTipo || mov.tipoMovimiento === this.selectedTipo;
       const matchesFecha = !this.selectedFecha || mov.fecha === this.selectedFecha;
-      
+
       return matchesSearch && matchesTipo && matchesFecha;
     });
-    
+
     this.currentPage = 1;
   }
 
@@ -105,7 +106,7 @@ export class MovimientosComponent {
       } as Movimiento;
       this.movimientos.push(newMovimiento);
     }
-    
+
     this.applyFilters();
     this.calculateStats();
     this.closeModal();
@@ -132,5 +133,9 @@ export class MovimientosComponent {
       'AJUSTE': 'status-info'
     };
     return classes[tipo] || 'status-neutral';
+  }
+
+  toggleMenu(id: string) {
+    this.openMenuId = this.openMenuId === id ? null : id;
   }
 }

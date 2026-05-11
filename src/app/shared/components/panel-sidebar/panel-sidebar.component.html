@@ -2,7 +2,7 @@
   <div class="panel-header">
     <div class="panel-header-info">
       <span class="panel-header-icon" *ngIf="currentMenu.icon">
-        <i class="fa-solid" [ngClass]="currentMenu.icon"></i>
+        <i [class]="'ri-' + currentMenu.icon"></i>
       </span>
       <div>
         <span class="panel-title">{{ currentMenu.title }}</span>
@@ -10,10 +10,10 @@
       </div>
     </div>
     <button class="panel-close" (click)="onClose()">
-      <i class="fa-solid fa-xmark"></i>
+      <i class="ri-close-line"></i>
     </button>
   </div>
-  
+
   <nav class="panel-nav">
     <button
       *ngFor="let item of currentMenu.items"
@@ -21,7 +21,7 @@
       [class.active]="activePage === item.id"
       [routerLink]="item.route || null"
       (click)="onSelectPage(item.id)">
-      <i class="fa-solid" [ngClass]="item.icon"></i>
+      <i [class]="'ri-' + item.icon"></i>
       {{ item.label }}
     </button>
   </nav>

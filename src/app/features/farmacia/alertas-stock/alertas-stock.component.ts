@@ -20,18 +20,18 @@ interface AlertaStock {
 })
 export class AlertasStockComponent {
   Math = Math;
-  
+
   alertas: AlertaStock[] = [];
   filteredAlertas: AlertaStock[] = [];
-  
+
   searchTerm: string = '';
   selectedEstado: string = '';
   selectedUbicacion: string = '';
-  
+
   showModal: boolean = false;
   isEditMode: boolean = false;
   currentAlerta: Partial<AlertaStock> = {};
-  
+
   currentPage: number = 1;
   itemsPerPage: number = 10;
   openMenuId: string | null = null;
@@ -50,16 +50,16 @@ export class AlertasStockComponent {
 
   applyFilters() {
     this.filteredAlertas = this.alertas.filter(alerta => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         alerta.medicamento.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         alerta.ubicacion.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
+
       const matchesEstado = !this.selectedEstado || alerta.estado === this.selectedEstado;
       const matchesUbicacion = !this.selectedUbicacion || alerta.ubicacion === this.selectedUbicacion;
-      
+
       return matchesSearch && matchesEstado && matchesUbicacion;
     });
-    
+
     this.currentPage = 1;
   }
 
@@ -104,7 +104,7 @@ export class AlertasStockComponent {
       } as AlertaStock;
       this.alertas.push(newAlerta);
     }
-    
+
     this.applyFilters();
     this.calculateStats();
     this.closeModal();
@@ -136,5 +136,9 @@ export class AlertasStockComponent {
   getStockPercentage(alerta: AlertaStock): number {
     if (alerta.stockMinimo === 0) return 100;
     return Math.round((alerta.stockActual / alerta.stockMinimo) * 100);
+  }
+
+  toggleMenu(id: string) {
+    this.openMenuId = this.openMenuId === id ? null : id;
   }
 }

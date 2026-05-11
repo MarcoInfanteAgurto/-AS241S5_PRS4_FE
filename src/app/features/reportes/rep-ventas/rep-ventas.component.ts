@@ -1,21 +1,114 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModulePageComponent, ModulePageConfig } from '../../../shared/components/module-page/module-page.component';
+import { FormsModule } from '@angular/forms';
+
+interface RepVenta {
+  id: string;
+  ticket: string;
+  domain: string;
+  pacienteNombre: string;
+  items: string;
+  total: number;
+  estado: string;
+  tipo: string;
+  fecha: string;
+}
 
 @Component({
   selector: 'app-rep-ventas',
   standalone: true,
-  imports: [CommonModule, ModulePageComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './rep-ventas.component.html',
   styleUrls: ['./rep-ventas.component.scss']
 })
-export class RepVentasComponent {
-  pageConfig: ModulePageConfig = {
-    title: 'Reporte de Ventas',
-    subtitle: 'Reporte de ventas médicas',
-    icon: 'fa-chart-line',
-    showFilters: true,
-    showSearch: true,
-    showAddButton: false
-  };
+export class RepVentasComponent implements OnInit {
+  items: RepVenta[] = [];
+  filteredItems: RepVenta[] = [];
+  paginatedItems: RepVenta[] = [];
+
+  searchTerm = '';
+  statusFilter = 'all';
+  domainFilter = 'all';
+
+  statusOptions = ['CONSIGNADO', 'DONADO', 'REVOCADO', 'PENDING'];
+  domainOptions = ['FARMACIA', 'CLINICA'];
+
+  openMenuId: string | null = null;
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 1;
+  pages: number[] = [];
+
+  get stats() {
+    return {
+      total: this.items.length,
+      farmacia: this.items.filter(i => i.domain === 'FARMACIA').length,
+      clinica: this.items.filter(i => i.domain === 'CLINICA').length,
+      montoTotal: this.items.reduce((acc, i) => acc + i.total, 0)
+    };
+  }
+
+  ngOnInit() { this.applyFilters(); }
+
+  applyFilters() {
+    let result = [...this.items];
+    if (this.searchTerm) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(i =>
+        i.ticket.toLowerCase().includes(term) ||
+        i.pacienteNombre.toLowerCase().includes(term) ||
+        i.items.toLowerCase().includes(term)
+      );
+    }
+    if (this.statusFilter !== 'all') result = result.filter(i => i.estado === this.statusFilter);
+    if (this.domainFilter !== 'all') result = result.filter(i => i.domain === this.domainFilter);
+    this.filteredItems = result;
+    this.currentPage = 1;
+    this.updatePagination();
+  }
+
+  updatePagination() {
+    this.totalPages = Math.max(1, Math.ceil(this.filteredItems.length / this.pageSize));
+    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.paginatedItems = this.filteredItems.slice(start, start + this.pageSize);
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePagination();
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
+    this.statusFilter = 'all';
+    this.domainFilter = 'all';
+    this.applyFilters();
+  }
+
+  toggleMenu(id: string) { this.openMenuId = this.openMenuId === id ? null : id; }
+
+  verDetalle(item: RepVenta) {
+    this.openMenuId = null;
+  }
+
+  getStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      APPROVED: 'Aprobado', PAID: 'Pagado', PENDING: 'Pendiente', REJECTED: 'Rechazado',
+      CERRADO: 'Cerrado', ABIERTO: 'Abierto', PROYECTADO: 'Proyectado',
+      ACTIVE: 'Activo', INACTIVE: 'Inactivo', CONSIGNADO: 'Consignado', DONADO: 'Donado', REVOCADO: 'Revocado'
+    };
+    return map[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      APPROVED: 'success', PAID: 'success', ACTIVE: 'success', CONSIGNADO: 'success',
+      PENDING: 'warning', ABIERTO: 'warning', PROYECTADO: 'info',
+      REJECTED: 'danger', INACTIVE: 'danger', REVOCADO: 'danger', CERRADO: 'info', DONADO: 'info'
+    };
+    return map[status] || 'info';
+  }
 }

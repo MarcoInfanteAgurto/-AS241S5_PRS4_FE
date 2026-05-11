@@ -21,7 +21,7 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
-      
+
       // ═══ PERSONAS ═══
       {
         path: 'users',
@@ -47,7 +47,7 @@ export const routes: Routes = [
         path: 'suppliers',
         loadComponent: () => import('./features/suppliers/supplier-list/supplier-list.component').then(m => m.SupplierListComponent)
       },
-      
+
       // ═══ SOCIAL ═══
       {
         path: 'proyectos',
@@ -69,7 +69,7 @@ export const routes: Routes = [
         path: 'donaciones',
         loadComponent: () => import('./features/social/donaciones/donaciones.component').then(m => m.DonacionesComponent)
       },
-      
+
       // ═══ CLÍNICA ═══
       {
         path: 'atencion-medica',
@@ -103,7 +103,7 @@ export const routes: Routes = [
         path: 'specialties',
         loadComponent: () => import('./features/specialties/specialty-list/specialty-list.component').then(m => m.SpecialtyListComponent)
       },
-      
+
       // ═══ FARMACIA ═══
       {
         path: 'medications',
@@ -129,7 +129,7 @@ export const routes: Routes = [
         path: 'alertas-stock',
         loadComponent: () => import('./features/farmacia/alertas-stock/alertas-stock.component').then(m => m.AlertasStockComponent)
       },
-      
+
       // ═══ PRODUCTOS ═══
       {
         path: 'products',
@@ -155,8 +155,32 @@ export const routes: Routes = [
         path: 'prod-kits-lab',
         loadComponent: () => import('./features/productos/prod-kits-lab/prod-kits-lab.component').then(m => m.ProdKitsLabComponent)
       },
-      
-      // ═══ FINANZAS ═══
+
+      // ═══ ADMINISTRACIÓN ═══
+      {
+        path: 'adm-tipo-cliente',
+        loadComponent: () => import('./features/administracion/adm-tipo-cliente/adm-tipo-cliente.component').then(m => m.AdmTipoClienteComponent)
+      },
+      {
+        path: 'adm-precios-terapias',
+        loadComponent: () => import('./features/administracion/adm-precios-terapias/adm-precios-terapias.component').then(m => m.AdmPreciosTerapiasComponent)
+      },
+      {
+        path: 'adm-precios-consultas',
+        loadComponent: () => import('./features/administracion/adm-precios-consultas/adm-precios-consultas.component').then(m => m.AdmPreciosConsultasComponent)
+      },
+      {
+        path: 'adm-pruebas-lab',
+        loadComponent: () => import('./features/administracion/adm-pruebas-lab/adm-pruebas-lab.component').then(m => m.AdmPruebasLabComponent)
+      },
+      {
+        path: 'adm-kits-lab',
+        loadComponent: () => import('./features/administracion/adm-kits-lab/adm-kits-lab.component').then(m => m.AdmKitsLabComponent)
+      },
+      {
+        path: 'adm-compras',
+        loadComponent: () => import('./features/administracion/adm-compras/adm-compras.component').then(m => m.AdmComprasComponent)
+      },
       {
         path: 'ingresos',
         loadComponent: () => import('./features/finanzas/ingresos/ingresos.component').then(m => m.IngresosComponent)
@@ -181,7 +205,7 @@ export const routes: Routes = [
         path: 'flujo-caja',
         loadComponent: () => import('./features/finanzas/flujo-caja/flujo-caja.component').then(m => m.FlujoCajaComponent)
       },
-      
+
       // ═══ REPORTES ═══
       {
         path: 'rep-ventas',
@@ -219,7 +243,7 @@ export const routes: Routes = [
         path: 'ranking',
         loadComponent: () => import('./features/reportes/ranking/ranking.component').then(m => m.RankingComponent)
       },
-      
+
       // ═══ CONFIGURACIÓN ═══
       {
         path: 'config-apariencia',

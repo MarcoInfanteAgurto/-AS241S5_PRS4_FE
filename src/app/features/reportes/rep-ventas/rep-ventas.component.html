@@ -1,8 +1,110 @@
-<app-module-page [config]="pageConfig">
-  <div class="info-card">
-    <i class="fa-solid fa-info-circle"></i>
-    <p><strong>Módulo: Reporte de Ventas</strong></p>
-    <p>Reporte de ventas médicas</p>
-    <p class="text-muted">Microservicio: Consolidado</p>
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon"><i class="fa-solid fa-list"></i></div>
+      <div><strong>{{ stats.total }}</strong><span>Total Ventas</span></div>
+    </div>
+    <div class="module-stat success">
+      <div class="module-stat-icon"><i class="fa-solid fa-pills"></i></div>
+      <div><strong>{{ stats.farmacia }}</strong><span>Farmacia</span></div>
+    </div>
+    <div class="module-stat warning">
+      <div class="module-stat-icon"><i class="fa-solid fa-hospital"></i></div>
+      <div><strong>{{ stats.clinica }}</strong><span>Clínica</span></div>
+    </div>
+    <div class="module-stat money">
+      <div class="module-stat-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+      <div><strong>S/ {{ stats.montoTotal | number:'1.2-2' }}</strong><span>Monto Total</span></div>
+    </div>
   </div>
-</app-module-page>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" placeholder="Buscar venta..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="all">Todos</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{ getStatusLabel(s) }}</option>
+        </select>
+      </div>
+      <div class="table-filter-select">
+        <span>Dominio</span>
+        <select [(ngModel)]="domainFilter" (change)="applyFilters()">
+          <option value="all">Todos</option>
+          <option *ngFor="let d of domainOptions" [value]="d">{{ d }}</option>
+        </select>
+      </div>
+      <button *ngIf="searchTerm || statusFilter !== 'all' || domainFilter !== 'all'" class="btn btn-ghost" (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i> Limpiar
+      </button>
+    </div>
+    <div class="module-filters-right"></div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket</th>
+            <th>Fecha</th>
+            <th>Dominio</th>
+            <th>Paciente</th>
+            <th>Items/Área</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredItems.length === 0">
+            <td colspan="9">
+              <div class="empty-state"><p>No hay registros que coincidan con los filtros.</p></div>
+            </td>
+          </tr>
+          <tr *ngFor="let item of paginatedItems">
+            <td>{{ item.ticket }}</td>
+            <td>{{ item.fecha }}</td>
+            <td>{{ item.domain }}</td>
+            <td>{{ item.pacienteNombre }}</td>
+            <td>{{ item.items }}</td>
+            <td>S/ {{ item.total | number:'1.2-2' }}</td>
+            <td><span class="status-chip" [ngClass]="getStatusClass(item.estado)">{{ getStatusLabel(item.estado) }}</span></td>
+            <td>{{ item.tipo }}</td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button class="row-menu-trigger" (click)="toggleMenu(item.id)" title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === item.id">
+                  <button (click)="verDetalle(item)"><i class="fa-solid fa-eye"></i> Ver detalle</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">Página {{ currentPage }} de {{ totalPages }}</span>
+        <div class="table-footer-progress">
+          <div class="table-footer-progress-bar" [style.width.%]="(currentPage / totalPages) * 100"></div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button *ngFor="let page of pages" class="pagination-btn pagination-num" [class.active]="page === currentPage" (click)="goToPage(page)">{{ page }}</button>
+        <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>

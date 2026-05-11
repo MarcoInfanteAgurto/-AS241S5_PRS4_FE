@@ -29,179 +29,144 @@ export class PanelSidebarComponent {
   @Output() selectPage = new EventEmitter<string>();
   @Output() close = new EventEmitter<void>();
 
-  // Definición de menús basada exactamente en SisCaritas
   menus: { [key: string]: PanelMenu } = {
-    dashboard: {
-      title: 'Dashboard',
-      icon: 'fa-house',
-      desc: '',
-      items: []
-    },
-    
-    // PERSONAS (Users) - MS 8081
+
+    // PERSONAS
     users: {
       title: 'Personas',
-      icon: 'fa-users',
+      icon: 'group-line',
       desc: 'Gestión de personas y roles',
       items: [
-        { id: 'usuarios', label: 'Usuarios Sistema', icon: 'fa-key', route: '/admin/users' },
-        { id: 'beneficiarios', label: 'Beneficiarios', icon: 'fa-users', route: '/admin/beneficiarios' },
-        { id: 'voluntarios', label: 'Voluntarios', icon: 'fa-heart', route: '/admin/voluntarios' },
-        { id: 'pacientes', label: 'Pacientes', icon: 'fa-user', route: '/admin/patients' },
-        { id: 'personal-medico', label: 'Personal Médico', icon: 'fa-user-doctor', route: '/admin/doctors' },
-        { id: 'proveedores', label: 'Proveedores', icon: 'fa-box', route: '/admin/suppliers' }
+        { id: 'usuarios', label: 'Usuarios Sistema', icon: 'key-2-line', route: '/admin/users' },
+        { id: 'beneficiarios', label: 'Beneficiarios', icon: 'user-heart-line', route: '/admin/beneficiarios' },
+        { id: 'voluntarios', label: 'Voluntarios', icon: 'hand-heart-line', route: '/admin/voluntarios' },
+        { id: 'pacientes', label: 'Pacientes', icon: 'user-line', route: '/admin/patients' },
+        { id: 'personal-medico', label: 'Personal Médico', icon: 'stethoscope-line', route: '/admin/doctors' },
+        { id: 'proveedores', label: 'Proveedores', icon: 'building-2-line', route: '/admin/suppliers' }
       ]
     },
 
-    // SOCIAL (Leaf)
+    // SOCIAL
     social: {
       title: 'Social',
-      icon: 'fa-leaf',
+      icon: 'seedling-line',
       desc: 'Proyectos y asistencia social',
       items: [
-        { id: 'proyectos', label: 'Proyectos', icon: 'fa-layer-group', route: '/admin/proyectos' },
-        { id: 'campanas', label: 'Campañas', icon: 'fa-heart', route: '/admin/campanas' },
-        { id: 'distribuciones', label: 'Distribuciones', icon: 'fa-box', route: '/admin/distribuciones' },
-        { id: 'beneficiarios-atendidos', label: 'Beneficiarios Atendidos', icon: 'fa-users', route: '/admin/beneficiarios-atendidos' },
-        { id: 'donaciones', label: 'Donaciones', icon: 'fa-gift', route: '/admin/donaciones' }
+        { id: 'proyectos', label: 'Proyectos', icon: 'stack-line', route: '/admin/proyectos' },
+        { id: 'campanas', label: 'Campañas', icon: 'heart-line', route: '/admin/campanas' },
+        { id: 'distribuciones', label: 'Distribuciones', icon: 'truck-line', route: '/admin/distribuciones' },
+        { id: 'beneficiarios-atendidos', label: 'Beneficiarios Atendidos', icon: 'user-received-line', route: '/admin/beneficiarios-atendidos' },
+        { id: 'donaciones', label: 'Donaciones', icon: 'gift-line', route: '/admin/donaciones' }
       ]
     },
 
-    // CLÍNICA (Building2) - MS 8084
+    // CLÍNICA
     doctors: {
       title: 'Clínica',
-      icon: 'fa-building',
+      icon: 'hospital-line',
       desc: 'Atención médica y pacientes',
       items: [
-        { id: 'atencion-medica', label: 'Atención Médica', icon: 'fa-stethoscope', route: '/admin/atencion-medica' },
-        { id: 'consultas', label: 'Consultas', icon: 'fa-clipboard', route: '/admin/consultas' },
-        { id: 'terapias', label: 'Terapias', icon: 'fa-heart-pulse', route: '/admin/terapias' },
-        { id: 'tratamientos', label: 'Tratamientos', icon: 'fa-hospital', route: '/admin/tratamientos' },
-        { id: 'laboratorio', label: 'Laboratorio', icon: 'fa-flask', route: '/admin/laboratorio' },
-        { id: 'pruebas-lab', label: 'Pruebas Laboratorio', icon: 'fa-vial', route: '/admin/pruebas-lab' },
-        { id: 'kits-lab', label: 'Kits Laboratorio', icon: 'fa-box', route: '/admin/kits-lab' },
-        { id: 'especialidades', label: 'Especialidades', icon: 'fa-star', route: '/admin/specialties' },
-        { id: 'cli-personal-medico', label: 'Personal Médico', icon: 'fa-user-doctor', route: '/admin/doctors' }
+        { id: 'atencion-medica', label: 'Atención Médica', icon: 'stethoscope-line', route: '/admin/atencion-medica' },
+        { id: 'consultas', label: 'Consultas', icon: 'file-list-3-line', route: '/admin/consultas' },
+        { id: 'terapias', label: 'Terapias', icon: 'heart-pulse-line', route: '/admin/terapias' },
+        { id: 'tratamientos', label: 'Tratamientos', icon: 'surgical-mask-line', route: '/admin/tratamientos' },
+        { id: 'laboratorio', label: 'Laboratorio', icon: 'flask-line', route: '/admin/laboratorio' },
+        { id: 'pruebas-lab', label: 'Pruebas Laboratorio', icon: 'test-tube-line', route: '/admin/pruebas-lab' },
+        { id: 'kits-lab', label: 'Kits Laboratorio', icon: 'first-aid-kit-line', route: '/admin/kits-lab' },
+        { id: 'especialidades', label: 'Especialidades', icon: 'award-line', route: '/admin/specialties' },
+        { id: 'cli-personal', label: 'Personal Médico', icon: 'user-star-line', route: '/admin/doctors' }
       ]
     },
 
-    // FARMACIA (Pill) - MS 8085
+    // FARMACIA
     medications: {
       title: 'Farmacia',
-      icon: 'fa-pills',
+      icon: 'medicine-bottle-line',
       desc: 'Medicamentos e inventario',
       items: [
-        { id: 'medicamentos', label: 'Medicamentos', icon: 'fa-pills', route: '/admin/medications' },
-        { id: 'ventas-farmacia', label: 'Ventas Farmacia', icon: 'fa-shopping-cart', route: '/admin/ventas-farmacia' },
-        { id: 'compras-farmacia', label: 'Compras Farmacia', icon: 'fa-receipt', route: '/admin/compras-farmacia' },
-        { id: 'inventario-farmacia', label: 'Inventario Farmacia', icon: 'fa-database', route: '/admin/inventario-farmacia' },
-        { id: 'movimientos-farm', label: 'Movimientos', icon: 'fa-right-left', route: '/admin/movimientos' },
-        { id: 'alertas-stock', label: 'Alertas de Stock', icon: 'fa-triangle-exclamation', route: '/admin/alertas-stock' }
+        { id: 'medicamentos', label: 'Medicamentos', icon: 'capsule-line', route: '/admin/medications' },
+        { id: 'ventas-farmacia', label: 'Ventas Farmacia', icon: 'shopping-cart-line', route: '/admin/ventas-farmacia' },
+        { id: 'compras-farmacia', label: 'Compras Farmacia', icon: 'receipt-line', route: '/admin/compras-farmacia' },
+        { id: 'inventario-farmacia', label: 'Inventario', icon: 'archive-drawer-line', route: '/admin/inventario-farmacia' },
+        { id: 'movimientos-farm', label: 'Movimientos', icon: 'arrow-left-right-line', route: '/admin/movimientos' },
+        { id: 'alertas-stock', label: 'Alertas de Stock', icon: 'alarm-warning-line', route: '/admin/alertas-stock' }
       ]
     },
 
-    // PRODUCTOS (Package) - MS 8086
+    // PRODUCTOS
     products: {
       title: 'Productos',
-      icon: 'fa-box',
+      icon: 'price-tag-3-line',
       desc: 'Catálogo de servicios',
       items: [
-        { id: 'prod-tratamientos', label: 'Tratamientos', icon: 'fa-hospital', route: '/admin/prod-tratamientos' },
-        { id: 'prod-consultas', label: 'Consultas', icon: 'fa-clipboard', route: '/admin/prod-consultas' },
-        { id: 'prod-terapias', label: 'Terapias', icon: 'fa-heart-pulse', route: '/admin/prod-terapias' },
-        { id: 'prod-medicamentos', label: 'Medicamentos', icon: 'fa-pills', route: '/admin/prod-medicamentos' },
-        { id: 'prod-kits-lab', label: 'Kits Laboratorio', icon: 'fa-box', route: '/admin/prod-kits-lab' }
+        { id: 'prod-tratamientos', label: 'Tratamientos', icon: 'surgical-mask-line', route: '/admin/prod-tratamientos' },
+        { id: 'prod-consultas', label: 'Consultas', icon: 'file-list-3-line', route: '/admin/prod-consultas' },
+        { id: 'prod-terapias', label: 'Terapias', icon: 'heart-pulse-line', route: '/admin/prod-terapias' },
+        { id: 'prod-medicamentos', label: 'Medicamentos', icon: 'capsule-line', route: '/admin/prod-medicamentos' },
+        { id: 'prod-kits-lab', label: 'Kits Laboratorio', icon: 'first-aid-kit-line', route: '/admin/prod-kits-lab' }
       ]
     },
 
-    // FINANZAS (DollarSign)
+    // FINANZAS
     finances: {
       title: 'Finanzas',
-      icon: 'fa-dollar-sign',
+      icon: 'money-dollar-circle-line',
       desc: 'Ingresos, egresos y balance',
       items: [
-        { id: 'ingresos', label: 'Ingresos', icon: 'fa-arrow-trend-up', route: '/admin/ingresos' },
-        { id: 'egresos', label: 'Egresos', icon: 'fa-arrow-trend-down', route: '/admin/egresos' },
-        { id: 'gastos', label: 'Gastos', icon: 'fa-wallet', route: '/admin/gastos' },
-        { id: 'compras', label: 'Compras', icon: 'fa-shopping-cart', route: '/admin/compras' },
-        { id: 'balance', label: 'Balance General', icon: 'fa-chart-pie', route: '/admin/balance' },
-        { id: 'flujo-caja', label: 'Flujo de Caja', icon: 'fa-credit-card', route: '/admin/flujo-caja' }
+        { id: 'ingresos', label: 'Ingresos', icon: 'arrow-up-circle-line', route: '/admin/ingresos' },
+        { id: 'egresos', label: 'Egresos', icon: 'arrow-down-circle-line', route: '/admin/egresos' },
+        { id: 'gastos', label: 'Gastos', icon: 'wallet-3-line', route: '/admin/gastos' },
+        { id: 'compras', label: 'Compras', icon: 'shopping-bag-line', route: '/admin/compras' },
+        { id: 'balance', label: 'Balance General', icon: 'scales-line', route: '/admin/balance' },
+        { id: 'flujo-caja', label: 'Flujo de Caja', icon: 'exchange-dollar-line', route: '/admin/flujo-caja' }
       ]
     },
 
-    // REPORTES (BarChart2)
+    // REPORTES
     reports: {
       title: 'Reportes',
-      icon: 'fa-chart-bar',
+      icon: 'bar-chart-2-line',
       desc: 'Análisis y estadísticas',
       items: [
-        { id: 'rep-ventas', label: 'Ventas Médicas', icon: 'fa-chart-bar', route: '/admin/rep-ventas' },
-        { id: 'rep-compras', label: 'Compras Médicas', icon: 'fa-receipt', route: '/admin/rep-compras' },
-        { id: 'rep-laboratorio', label: 'Laboratorio', icon: 'fa-flask', route: '/admin/rep-laboratorio' },
-        { id: 'rep-productos', label: 'Productos', icon: 'fa-box', route: '/admin/rep-productos' },
-        { id: 'rep-tratamientos', label: 'Tratamientos', icon: 'fa-hospital', route: '/admin/rep-tratamientos' },
-        { id: 'rep-consultas', label: 'Consultas', icon: 'fa-clipboard', route: '/admin/rep-consultas' },
-        { id: 'rep-terapias', label: 'Terapias', icon: 'fa-heart-pulse', route: '/admin/rep-terapias' },
-        { id: 'rep-pacientes', label: 'Pacientes', icon: 'fa-user', route: '/admin/rep-pacientes' },
-        { id: 'ranking', label: 'Ranking', icon: 'fa-star', route: '/admin/ranking' }
+        { id: 'rep-ventas', label: 'Ventas Médicas', icon: 'line-chart-line', route: '/admin/rep-ventas' },
+        { id: 'rep-compras', label: 'Compras Médicas', icon: 'receipt-line', route: '/admin/rep-compras' },
+        { id: 'rep-laboratorio', label: 'Laboratorio', icon: 'flask-line', route: '/admin/rep-laboratorio' },
+        { id: 'rep-productos', label: 'Productos', icon: 'price-tag-3-line', route: '/admin/rep-productos' },
+        { id: 'rep-tratamientos', label: 'Tratamientos', icon: 'surgical-mask-line', route: '/admin/rep-tratamientos' },
+        { id: 'rep-consultas', label: 'Consultas', icon: 'file-list-3-line', route: '/admin/rep-consultas' },
+        { id: 'rep-terapias', label: 'Terapias', icon: 'heart-pulse-line', route: '/admin/rep-terapias' },
+        { id: 'rep-pacientes', label: 'Pacientes', icon: 'user-line', route: '/admin/rep-pacientes' },
+        { id: 'ranking', label: 'Ranking', icon: 'trophy-line', route: '/admin/ranking' }
       ]
     },
 
-    // CONFIGURACIÓN (Settings) - MS 8087
+    // ADMINISTRACIÓN (antes "specialties")
     specialties: {
-      title: 'Configuración',
-      icon: 'fa-gear',
-      desc: 'Parámetros y catálogos',
+      title: 'Administración',
+      icon: 'shield-keyhole-line',
+      desc: 'Catálogos y parámetros del sistema',
       items: [
-        { id: 'adm-especialidades', label: 'Especialidades', icon: 'fa-star', route: '/admin/specialties' },
-        { id: 'tipo-cliente', label: 'Tipo de Cliente', icon: 'fa-tag', route: '/admin/config-sistema' },
-        { id: 'precios-terapias', label: 'Precios de Terapias', icon: 'fa-dollar-sign', route: '/admin/config-sistema' },
-        { id: 'precios-consultas', label: 'Precios de Consultas', icon: 'fa-dollar-sign', route: '/admin/config-sistema' },
-        { id: 'adm-pruebas-lab', label: 'Pruebas Laboratorio', icon: 'fa-vial', route: '/admin/pruebas-lab' },
-        { id: 'adm-kits-lab', label: 'Kits Laboratorio', icon: 'fa-box', route: '/admin/kits-lab' },
-        { id: 'precios-productos', label: 'Precios de Productos', icon: 'fa-dollar-sign', route: '/admin/config-sistema' },
-        { id: 'adm-compras', label: 'Compras', icon: 'fa-shopping-cart', route: '/admin/compras' },
-        { id: 'config-sistema', label: 'Configuración del Sistema', icon: 'fa-sliders', route: '/admin/config-sistema' }
+        { id: 'adm-especialidades', label: 'Especialidades', icon: 'award-line', route: '/admin/specialties' },
+        { id: 'adm-tipo-cliente', label: 'Tipo de Cliente', icon: 'price-tag-2-line', route: '/admin/adm-tipo-cliente' },
+        { id: 'adm-precios-terapias', label: 'Precios de Terapias', icon: 'heart-pulse-line', route: '/admin/adm-precios-terapias' },
+        { id: 'adm-precios-consultas', label: 'Precios de Consultas', icon: 'file-list-3-line', route: '/admin/adm-precios-consultas' },
+        { id: 'adm-pruebas-lab', label: 'Pruebas Laboratorio', icon: 'test-tube-line', route: '/admin/adm-pruebas-lab' },
+        { id: 'adm-kits-lab', label: 'Kits Laboratorio', icon: 'first-aid-kit-line', route: '/admin/adm-kits-lab' },
+        { id: 'adm-compras', label: 'Compras', icon: 'shopping-bag-line', route: '/admin/adm-compras' }
       ]
     },
 
-    // CONFIGURACIÓN AVANZADA (Sliders)
+    // CONFIGURACIÓN
     settings: {
       title: 'Configuración',
-      icon: 'fa-sliders',
+      icon: 'settings-3-line',
       desc: 'Apariencia, seguridad y sistema',
       items: [
-        { id: 'config-apariencia', label: 'Apariencia', icon: 'fa-palette', route: '/admin/config-apariencia' },
-        { id: 'config-notificaciones', label: 'Notificaciones', icon: 'fa-bell', route: '/admin/config-notificaciones' },
-        { id: 'config-seguridad', label: 'Privacidad y Seguridad', icon: 'fa-shield', route: '/admin/config-seguridad' },
-        { id: 'config-perfil', label: 'Perfil', icon: 'fa-user', route: '/admin/config-perfil' },
-        { id: 'config-sistema', label: 'Sistema', icon: 'fa-globe', route: '/admin/config-sistema' }
-      ]
-    },
-
-    // PROVEEDORES (Building) - MS 8082
-    suppliers: {
-      title: 'Proveedores',
-      icon: 'fa-building',
-      desc: 'Gestión de proveedores',
-      items: [
-        { id: 'suppliers-list', label: 'Lista de Proveedores', icon: 'fa-list', route: '/admin/suppliers' },
-        { id: 'suppliers-orders', label: 'Órdenes de Compra', icon: 'fa-file-invoice' },
-        { id: 'suppliers-payments', label: 'Pagos', icon: 'fa-money-bill' },
-        { id: 'suppliers-contracts', label: 'Contratos', icon: 'fa-file-contract' }
-      ]
-    },
-
-    // PACIENTES (User) - MS 8083
-    patients: {
-      title: 'Pacientes',
-      icon: 'fa-user',
-      desc: 'Gestión de pacientes',
-      items: [
-        { id: 'patients-list', label: 'Lista de Pacientes', icon: 'fa-list', route: '/admin/patients' },
-        { id: 'patients-history', label: 'Historial Médico', icon: 'fa-file-medical' },
-        { id: 'patients-appointments', label: 'Citas', icon: 'fa-calendar-check' },
-        { id: 'patients-records', label: 'Expedientes', icon: 'fa-folder-open' }
+        { id: 'config-apariencia', label: 'Apariencia', icon: 'palette-line', route: '/admin/config-apariencia' },
+        { id: 'config-notificaciones', label: 'Notificaciones', icon: 'notification-3-line', route: '/admin/config-notificaciones' },
+        { id: 'config-seguridad', label: 'Privacidad y Seguridad', icon: 'shield-check-line', route: '/admin/config-seguridad' },
+        { id: 'config-perfil', label: 'Perfil', icon: 'user-settings-line', route: '/admin/config-perfil' },
+        { id: 'config-sistema', label: 'Sistema', icon: 'global-line', route: '/admin/config-sistema' }
       ]
     }
   };

@@ -1,8 +1,189 @@
-<app-module-page [config]="pageConfig">
-  <div class="info-card">
-    <i class="fa-solid fa-info-circle"></i>
-    <p><strong>Módulo: Productos - Medicamentos</strong></p>
-    <p>Catálogo de medicamentos</p>
-    <p class="text-muted">Microservicio: MS-PRODUCTS (8086) - PostgreSQL</p>
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon"><i class="fa-solid fa-pills"></i></div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Medicamentos</span>
+      </div>
+    </div>
+    <div class="module-stat success">
+      <div class="module-stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+      <div>
+        <strong>{{ stats.active }}</strong>
+        <span>Activos</span>
+      </div>
+    </div>
+    <div class="module-stat warning">
+      <div class="module-stat-icon"><i class="fa-solid fa-times-circle"></i></div>
+      <div>
+        <strong>{{ stats.inactive }}</strong>
+        <span>Inactivos</span>
+      </div>
+    </div>
+    <div class="module-stat money">
+      <div class="module-stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div>
+        <strong>S/ {{ stats.precioPromedio.toFixed(2) }}</strong>
+        <span>Precio Promedio</span>
+      </div>
+    </div>
   </div>
-</app-module-page>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" placeholder="Buscar medicamentos..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="all">Todos</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{ getStatusLabel(s) }}</option>
+        </select>
+      </div>
+      <button *ngIf="searchTerm || statusFilter !== 'all'" class="btn btn-ghost" (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i> Limpiar
+      </button>
+    </div>
+    <div class="module-filters-right">
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i> Nuevo Medicamento
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Denominación Comercial</th>
+            <th>Denominación Genérica</th>
+            <th>Categoría</th>
+            <th>Laboratorio</th>
+            <th>Costo Unit.</th>
+            <th>Precio Venta</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredMedicamentos.length === 0">
+            <td colspan="9">
+              <div class="empty-state"><p>No hay registros que coincidan con los filtros.</p></div>
+            </td>
+          </tr>
+          <tr *ngFor="let med of paginatedMedicamentos">
+            <td>{{ med.denominacionComercial }}</td>
+            <td>{{ med.denominacionGenerica }}</td>
+            <td>{{ med.categoria }}</td>
+            <td>{{ med.laboratorio }}</td>
+            <td>S/ {{ med.costoUnitario.toFixed(2) }}</td>
+            <td>S/ {{ med.precioVenta.toFixed(2) }}</td>
+            <td>{{ med.vencimiento }}</td>
+            <td>
+              <span [class]="'status-chip ' + (med.status === 'ACTIVE' ? 'success' : 'danger')">
+                {{ getStatusLabel(med.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button class="row-menu-trigger" (click)="toggleMenu(med.id)" title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === med.id">
+                  <button (click)="openEditModal(med)">
+                    <i class="fa-solid fa-edit"></i> Editar
+                  </button>
+                  <button class="danger" (click)="deleteMedicamento(med.id); toggleMenu(med.id)">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">Página {{ currentPage }} de {{ totalPages }}</span>
+        <div class="table-footer-progress">
+          <div class="table-footer-progress-bar" [style.width.%]="(currentPage / totalPages) * 100"></div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let page of pages" class="pagination-btn pagination-num"
+          [class.active]="page === currentPage" (click)="goToPage(page)">{{ page }}</button>
+        <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">{{ editingMedicamento ? 'Editar Medicamento' : 'Nuevo Medicamento' }}</span>
+        <button class="modal-close" (click)="closeModal()"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group">
+          <label>Denominación Comercial</label>
+          <input type="text" [(ngModel)]="formData.denominacionComercial" placeholder="Nombre comercial">
+        </div>
+        <div class="form-group">
+          <label>Denominación Genérica</label>
+          <input type="text" [(ngModel)]="formData.denominacionGenerica" placeholder="Nombre genérico">
+        </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select [(ngModel)]="formData.categoria">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let cat of categoriaOptions" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Laboratorio</label>
+          <input type="text" [(ngModel)]="formData.laboratorio" placeholder="Laboratorio fabricante">
+        </div>
+        <div class="form-group">
+          <label>Costo Unitario (S/)</label>
+          <input type="number" [(ngModel)]="formData.costoUnitario" placeholder="0.00" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Precio Venta (S/)</label>
+          <input type="number" [(ngModel)]="formData.precioVenta" placeholder="0.00" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Vencimiento</label>
+          <input type="date" [(ngModel)]="formData.vencimiento">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let s of statusOptions" [value]="s">{{ getStatusLabel(s) }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" (click)="saveMedicamento()">
+          {{ editingMedicamento ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

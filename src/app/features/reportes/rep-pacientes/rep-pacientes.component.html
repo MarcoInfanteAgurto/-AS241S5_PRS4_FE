@@ -1,8 +1,103 @@
-<app-module-page [config]="pageConfig">
-  <div class="info-card">
-    <i class="fa-solid fa-info-circle"></i>
-    <p><strong>Módulo: Reporte de Pacientes</strong></p>
-    <p>Reporte de pacientes</p>
-    <p class="text-muted">Microservicio: MS-PATIENTS (8083) - MongoDB</p>
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon"><i class="fa-solid fa-users"></i></div>
+      <div><strong>{{ stats.total }}</strong><span>Total</span></div>
+    </div>
+    <div class="module-stat success">
+      <div class="module-stat-icon"><i class="fa-solid fa-user-check"></i></div>
+      <div><strong>{{ stats.activos }}</strong><span>Activos</span></div>
+    </div>
+    <div class="module-stat warning">
+      <div class="module-stat-icon"><i class="fa-solid fa-user-xmark"></i></div>
+      <div><strong>{{ stats.inactivos }}</strong><span>Inactivos</span></div>
+    </div>
+    <div class="module-stat money">
+      <div class="module-stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+      <div><strong>{{ stats.visitasRecientes }}</strong><span>Visitas Recientes</span></div>
+    </div>
   </div>
-</app-module-page>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" placeholder="Buscar paciente..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="all">Todos</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{ getStatusLabel(s) }}</option>
+        </select>
+      </div>
+      <button *ngIf="searchTerm || statusFilter !== 'all'" class="btn btn-ghost" (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i> Limpiar
+      </button>
+    </div>
+    <div class="module-filters-right"></div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Historia</th>
+            <th>Apellidos</th>
+            <th>Nombres</th>
+            <th>DNI</th>
+            <th>Sexo</th>
+            <th>Teléfono</th>
+            <th>Última Visita</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredItems.length === 0">
+            <td colspan="9">
+              <div class="empty-state"><p>No hay registros que coincidan con los filtros.</p></div>
+            </td>
+          </tr>
+          <tr *ngFor="let item of paginatedItems">
+            <td>{{ item.historia }}</td>
+            <td>{{ item.apellidos }}</td>
+            <td>{{ item.nombres }}</td>
+            <td>{{ item.dni }}</td>
+            <td>{{ item.sexo }}</td>
+            <td>{{ item.phone }}</td>
+            <td>{{ item.lastVisit }}</td>
+            <td><span class="status-chip" [ngClass]="getStatusClass(item.status)">{{ getStatusLabel(item.status) }}</span></td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button class="row-menu-trigger" (click)="toggleMenu(item.id)" title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === item.id">
+                  <button (click)="verDetalle(item)"><i class="fa-solid fa-eye"></i> Ver detalle</button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">Página {{ currentPage }} de {{ totalPages }}</span>
+        <div class="table-footer-progress">
+          <div class="table-footer-progress-bar" [style.width.%]="(currentPage / totalPages) * 100"></div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button class="pagination-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button *ngFor="let page of pages" class="pagination-btn pagination-num" [class.active]="page === currentPage" (click)="goToPage(page)">{{ page }}</button>
+        <button class="pagination-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>

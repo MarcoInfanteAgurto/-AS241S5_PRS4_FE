@@ -22,21 +22,22 @@ interface InventarioFarmacia {
 })
 export class InventarioFarmaciaComponent {
   Math = Math;
-  
+
   inventario: InventarioFarmacia[] = [];
   filteredInventario: InventarioFarmacia[] = [];
-  
+
   searchTerm: string = '';
   selectedCategoria: string = '';
   selectedEstado: string = '';
-  
+
   showModal: boolean = false;
   isEditMode: boolean = false;
   currentItem: Partial<InventarioFarmacia> = {};
-  
+  openMenuId: string | null = null;
+
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  
+
   stats = {
     total: 0,
     disponible: 0,
@@ -51,16 +52,16 @@ export class InventarioFarmaciaComponent {
 
   applyFilters() {
     this.filteredInventario = this.inventario.filter(item => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         item.medicamento.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         item.ubicacion.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
+
       const matchesCategoria = !this.selectedCategoria || item.categoria === this.selectedCategoria;
       const matchesEstado = !this.selectedEstado || item.estado === this.selectedEstado;
-      
+
       return matchesSearch && matchesCategoria && matchesEstado;
     });
-    
+
     this.currentPage = 1;
   }
 
@@ -105,7 +106,7 @@ export class InventarioFarmaciaComponent {
       } as InventarioFarmacia;
       this.inventario.push(newItem);
     }
-    
+
     this.applyFilters();
     this.calculateStats();
     this.closeModal();
@@ -144,5 +145,9 @@ export class InventarioFarmaciaComponent {
       'EXPIRED': 'status-danger'
     };
     return classes[estado] || 'status-neutral';
+  }
+
+  toggleMenu(id: string) {
+    this.openMenuId = this.openMenuId === id ? null : id;
   }
 }

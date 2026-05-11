@@ -22,21 +22,22 @@ interface CompraFarmacia {
 })
 export class ComprasFarmaciaComponent {
   Math = Math;
-  
+
   compras: CompraFarmacia[] = [];
   filteredCompras: CompraFarmacia[] = [];
-  
+
   searchTerm: string = '';
   selectedEstado: string = '';
   selectedTipo: string = '';
-  
+
   showModal: boolean = false;
   isEditMode: boolean = false;
   currentCompra: Partial<CompraFarmacia> = {};
-  
+  openMenuId: string | null = null;
+
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  
+
   stats = {
     total: 0,
     consignadas: 0,
@@ -51,17 +52,17 @@ export class ComprasFarmaciaComponent {
 
   applyFilters() {
     this.filteredCompras = this.compras.filter(compra => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         compra.numeroCompra.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         compra.proveedor.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         compra.registradoPor.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
+
       const matchesEstado = !this.selectedEstado || compra.estado === this.selectedEstado;
       const matchesTipo = !this.selectedTipo || compra.tipo === this.selectedTipo;
-      
+
       return matchesSearch && matchesEstado && matchesTipo;
     });
-    
+
     this.currentPage = 1;
   }
 
@@ -106,7 +107,7 @@ export class ComprasFarmaciaComponent {
       } as CompraFarmacia;
       this.compras.push(newCompra);
     }
-    
+
     this.applyFilters();
     this.calculateStats();
     this.closeModal();
@@ -133,5 +134,9 @@ export class ComprasFarmaciaComponent {
       'PENDIENTE': 'status-warning'
     };
     return classes[estado] || 'status-neutral';
+  }
+
+  toggleMenu(id: string) {
+    this.openMenuId = this.openMenuId === id ? null : id;
   }
 }

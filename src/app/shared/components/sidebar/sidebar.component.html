@@ -1,5 +1,5 @@
 <aside class="icon-sidebar">
-  <!-- Brand area with Cáritas logo -->
+  <!-- Brand -->
   <div class="brand">
     <div class="brand-logo-container">
       <div class="brand-logo-circle">
@@ -12,99 +12,65 @@
 
   <!-- Navigation Icons -->
   <nav>
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'dashboard'"
-      (click)="selectModule('dashboard')"
-      title="Dashboard">
-      <i class="fa-solid fa-house"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'dashboard'"
+      (click)="selectModule('dashboard')" title="Dashboard">
+      <i class="ri-home-5-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'users'"
-      (click)="selectModule('users')"
-      title="Personas">
-      <i class="fa-solid fa-users"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'users'"
+      (click)="selectModule('users')" title="Personas">
+      <i class="ri-group-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'social'"
-      (click)="selectModule('social')"
-      title="Social">
-      <i class="fa-solid fa-leaf"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'social'"
+      (click)="selectModule('social')" title="Social">
+      <i class="ri-seedling-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'doctors'"
-      (click)="selectModule('doctors')"
-      title="Clínica">
-      <i class="fa-solid fa-building"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'doctors'"
+      (click)="selectModule('doctors')" title="Clínica">
+      <i class="ri-hospital-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'medications'"
-      (click)="selectModule('medications')"
-      title="Farmacia">
-      <i class="fa-solid fa-pills"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'medications'"
+      (click)="selectModule('medications')" title="Farmacia">
+      <i class="ri-medicine-bottle-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'products'"
-      (click)="selectModule('products')"
-      title="Productos">
-      <i class="fa-solid fa-box"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'products'"
+      (click)="selectModule('products')" title="Productos">
+      <i class="ri-price-tag-3-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'finances'"
-      (click)="selectModule('finances')"
-      title="Finanzas">
-      <i class="fa-solid fa-dollar-sign"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'finances'"
+      (click)="selectModule('finances')" title="Finanzas">
+      <i class="ri-money-dollar-circle-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'reports'"
-      (click)="selectModule('reports')"
-      title="Reportes">
-      <i class="fa-solid fa-chart-bar"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'reports'"
+      (click)="selectModule('reports')" title="Reportes">
+      <i class="ri-bar-chart-2-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'specialties'"
-      (click)="selectModule('specialties')"
-      title="Administración">
-      <i class="fa-solid fa-gear"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'specialties'"
+      (click)="selectModule('specialties')" title="Administración">
+      <i class="ri-shield-keyhole-line"></i>
     </button>
 
-    <button
-      class="icon-nav-btn"
-      [class.active]="activeModule === 'settings'"
-      (click)="selectModule('settings')"
-      title="Configuración">
-      <i class="fa-solid fa-sliders"></i>
+    <button class="icon-nav-btn" [class.active]="activeModule === 'settings'"
+      (click)="selectModule('settings')" title="Configuración">
+      <i class="ri-settings-3-line"></i>
     </button>
   </nav>
 
-  <!-- Bottom Profile Section -->
+  <!-- Bottom Profile -->
   <div class="bottom">
-    <button
-      class="icon-nav-btn profile-trigger"
-      [class.active]="profileOpen"
-      title="Perfil"
-      (click)="toggleProfile()">
+    <button class="icon-nav-btn profile-trigger" [class.active]="profileOpen"
+      title="Perfil" (click)="toggleProfile()">
       <div class="sidebar-avatar">{{ userInitials }}</div>
-      <i class="fa-solid fa-chevron-up profile-chevron" [class.open]="profileOpen"></i>
+      <i class="ri-arrow-up-s-line profile-chevron" [class.open]="profileOpen"></i>
     </button>
 
-    <!-- Profile Popover -->
     <div class="profile-popover" *ngIf="profileOpen">
       <div class="profile-popover-header">
         <div class="profile-popover-avatar">{{ userInitials }}</div>
@@ -116,16 +82,16 @@
       <div class="profile-popover-divider"></div>
       <div class="profile-popover-actions">
         <button class="profile-popover-btn" (click)="closeProfile()">
-          <i class="fa-solid fa-user"></i>
+          <i class="ri-user-line"></i>
           Ver Perfil
         </button>
         <button class="profile-popover-btn" (click)="closeProfile()">
-          <i class="fa-solid fa-right-left"></i>
+          <i class="ri-swap-line"></i>
           Cambiar cuenta
         </button>
         <div class="profile-popover-divider"></div>
         <button class="profile-popover-btn danger" (click)="logout()">
-          <i class="fa-solid fa-right-from-bracket"></i>
+          <i class="ri-logout-box-r-line"></i>
           Cerrar Sesión
         </button>
       </div>
@@ -133,7 +99,7 @@
   </div>
 </aside>
 
-<!-- Panel Sidebar (expandable menu) -->
+<!-- Panel Sidebar -->
 <app-panel-sidebar
   [activeModule]="activeModule"
   [activePage]="activePage"

@@ -21,7 +21,7 @@ export class SidebarComponent {
   userName = 'Usuario Demo';
   userRole = 'ADMIN';
   userInitials = 'UD';
-  
+
   // Panel sidebar state
   activeModule: string | null = null;
   activePage: string | null = null;
@@ -54,7 +54,7 @@ export class SidebarComponent {
     } else {
       this.activeModule = moduleId;
       this.sidebarState.setPanelOpen(true);
-      
+
       // Navegar automáticamente a la primera subsección del módulo
       this.navigateToFirstSubsection(moduleId);
     }
@@ -67,7 +67,7 @@ export class SidebarComponent {
       'social': '/admin/proyectos',
       'doctors': '/admin/atencion-medica',
       'medications': '/admin/medications',
-      'products': '/admin/products',
+      'products': '/admin/prod-tratamientos',
       'finances': '/admin/ingresos',
       'reports': '/admin/rep-ventas',
       'specialties': '/admin/specialties',
