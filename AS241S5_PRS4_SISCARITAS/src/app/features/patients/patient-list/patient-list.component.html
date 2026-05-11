@@ -1,0 +1,282 @@
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-list"></i>
+      </div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Registros</span>
+      </div>
+    </div>
+
+    <div class="module-stat success">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-check-circle"></i>
+      </div>
+      <div>
+        <strong>{{ stats.active }}</strong>
+        <span>Activos</span>
+      </div>
+    </div>
+
+    <div class="module-stat warning">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+      </div>
+      <div>
+        <strong>{{ stats.critical }}</strong>
+        <span>Críticos</span>
+      </div>
+    </div>
+
+    <div class="module-stat money">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-calendar"></i>
+      </div>
+      <div>
+        <strong>{{ stats.thisMonth }}</strong>
+        <span>Este mes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar pacientes..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange(statusFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="table-filter-select">
+        <span>Tipo de Sangre</span>
+        <select [(ngModel)]="bloodTypeFilter" (change)="onBloodTypeFilterChange(bloodTypeFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let bloodType of bloodTypeOptions" [value]="bloodType">
+            {{ bloodType }}
+          </option>
+        </select>
+      </div>
+
+      <button 
+        *ngIf="searchTerm || statusFilter !== 'all' || bloodTypeFilter !== 'all'"
+        class="btn btn-ghost" 
+        (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Paciente
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Apellidos y N.</th>
+            <th>DNI</th>
+            <th>Sexo</th>
+            <th>Nacimiento</th>
+            <th>Historia</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredPatients.length === 0">
+            <td colspan="7">
+              <div class="empty-state">
+                <p>No hay registros que coincidan con los filtros.</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let patient of paginatedPatients">
+            <td>{{ patient.lastName }} {{ patient.firstName }}</td>
+            <td>{{ patient.dni || '-' }}</td>
+            <td>{{ patient.sexo || '-' }}</td>
+            <td>{{ patient.nacimiento || '-' }}</td>
+            <td>{{ patient.historia || '-' }}</td>
+            <td>
+              <span [class]="'status-chip ' + (patient.status === 'ACTIVE' ? 'success' : patient.status === 'CRITICAL' ? 'danger' : 'warning')">
+                {{ getStatusLabel(patient.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button 
+                  class="row-menu-trigger" 
+                  (click)="toggleMenu(patient.id)"
+                  title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === patient.id">
+                  <button (click)="openEditModal(patient)">
+                    <i class="fa-solid fa-edit"></i>
+                    Editar
+                  </button>
+                  <button>
+                    <i class="fa-solid fa-eye"></i>
+                    Ver detalle
+                  </button>
+                  <button class="danger" (click)="deletePatient(patient.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="table-footer-progress">
+          <div 
+            class="table-footer-progress-bar" 
+            [style.width.%]="(currentPage / totalPages) * 100">
+          </div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button 
+          *ngFor="let page of pages"
+          class="pagination-btn pagination-num"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          title="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">
+          {{ editingPatient ? 'Editar Paciente' : 'Nuevo Paciente' }}
+        </span>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group">
+          <label>Nombres</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.firstName"
+            placeholder="Nombres">
+        </div>
+        <div class="form-group">
+          <label>Apellidos</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.lastName"
+            placeholder="Apellidos">
+        </div>
+        <div class="form-group">
+          <label>DNI</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.dni"
+            placeholder="DNI">
+        </div>
+        <div class="form-group">
+          <label>Sexo</label>
+          <select [(ngModel)]="formData.sexo">
+            <option value="">Seleccionar...</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha Nacimiento</label>
+          <input 
+            type="date" 
+            [(ngModel)]="formData.nacimiento"
+            placeholder="Fecha de nacimiento">
+        </div>
+        <div class="form-group">
+          <label>Historia Clínica</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.historia"
+            placeholder="N° Historia">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.phone"
+            placeholder="Teléfono">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="savePatient()">
+          {{ editingPatient ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

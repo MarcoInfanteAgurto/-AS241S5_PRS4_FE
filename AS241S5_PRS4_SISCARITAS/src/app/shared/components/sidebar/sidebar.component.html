@@ -1,0 +1,142 @@
+<aside class="icon-sidebar">
+  <!-- Brand area with Cáritas logo -->
+  <div class="brand">
+    <div class="brand-logo-container">
+      <div class="brand-logo-circle">
+        <img src="/logo_caritas.jpeg" alt="Cáritas" class="brand-logo-img">
+      </div>
+      <span class="brand-name">SisCaritas</span>
+      <span class="brand-version">v2.0</span>
+    </div>
+  </div>
+
+  <!-- Navigation Icons -->
+  <nav>
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'dashboard'"
+      (click)="selectModule('dashboard')"
+      title="Dashboard">
+      <i class="fa-solid fa-house"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'users'"
+      (click)="selectModule('users')"
+      title="Personas">
+      <i class="fa-solid fa-users"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'social'"
+      (click)="selectModule('social')"
+      title="Social">
+      <i class="fa-solid fa-leaf"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'doctors'"
+      (click)="selectModule('doctors')"
+      title="Clínica">
+      <i class="fa-solid fa-building"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'medications'"
+      (click)="selectModule('medications')"
+      title="Farmacia">
+      <i class="fa-solid fa-pills"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'products'"
+      (click)="selectModule('products')"
+      title="Productos">
+      <i class="fa-solid fa-box"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'finances'"
+      (click)="selectModule('finances')"
+      title="Finanzas">
+      <i class="fa-solid fa-dollar-sign"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'reports'"
+      (click)="selectModule('reports')"
+      title="Reportes">
+      <i class="fa-solid fa-chart-bar"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'specialties'"
+      (click)="selectModule('specialties')"
+      title="Administración">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+
+    <button
+      class="icon-nav-btn"
+      [class.active]="activeModule === 'settings'"
+      (click)="selectModule('settings')"
+      title="Configuración">
+      <i class="fa-solid fa-sliders"></i>
+    </button>
+  </nav>
+
+  <!-- Bottom Profile Section -->
+  <div class="bottom">
+    <button
+      class="icon-nav-btn profile-trigger"
+      [class.active]="profileOpen"
+      title="Perfil"
+      (click)="toggleProfile()">
+      <div class="sidebar-avatar">{{ userInitials }}</div>
+      <i class="fa-solid fa-chevron-up profile-chevron" [class.open]="profileOpen"></i>
+    </button>
+
+    <!-- Profile Popover -->
+    <div class="profile-popover" *ngIf="profileOpen">
+      <div class="profile-popover-header">
+        <div class="profile-popover-avatar">{{ userInitials }}</div>
+        <div class="profile-popover-info">
+          <strong>{{ userName }}</strong>
+          <span class="profile-popover-role">{{ userRole }}</span>
+        </div>
+      </div>
+      <div class="profile-popover-divider"></div>
+      <div class="profile-popover-actions">
+        <button class="profile-popover-btn" (click)="closeProfile()">
+          <i class="fa-solid fa-user"></i>
+          Ver Perfil
+        </button>
+        <button class="profile-popover-btn" (click)="closeProfile()">
+          <i class="fa-solid fa-right-left"></i>
+          Cambiar cuenta
+        </button>
+        <div class="profile-popover-divider"></div>
+        <button class="profile-popover-btn danger" (click)="logout()">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Panel Sidebar (expandable menu) -->
+<app-panel-sidebar
+  [activeModule]="activeModule"
+  [activePage]="activePage"
+  (selectPage)="selectPage($event)"
+  (close)="closePanel()">
+</app-panel-sidebar>

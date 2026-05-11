@@ -1,0 +1,210 @@
+<div class="dashboard-hero">
+  <div>
+    <span class="eyebrow">
+      <i class="fa-solid fa-sparkles"></i>
+      BIENVENIDO
+    </span>
+    <h1>Panel de Control</h1>
+    <p>Vista general del sistema SisCaritas. Monitorea las operaciones, estadísticas y actividades recientes.</p>
+  </div>
+  <div class="hero-metrics">
+    <span>
+      Usuarios Activos
+      <strong>{{ stats.activeUsers }}</strong>
+    </span>
+    <span>
+      Pacientes Registrados
+      <strong>{{ stats.totalPatients }}</strong>
+    </span>
+    <span>
+      Medicamentos
+      <strong>{{ stats.totalMedications }}</strong>
+    </span>
+  </div>
+</div>
+
+<!-- KPI Grid -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background: #eef2ff; color: #3b82f6;">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div class="kpi-content">
+      <span class="kpi-label">Total Usuarios</span>
+      <strong class="kpi-value">{{ stats.totalUsers }}</strong>
+      <span class="kpi-badge success">
+        <i class="fa-solid fa-arrow-up"></i>
+        +12%
+      </span>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background: #dcfce7; color: #16a34a;">
+      <i class="fa-solid fa-user"></i>
+    </div>
+    <div class="kpi-content">
+      <span class="kpi-label">Pacientes</span>
+      <strong class="kpi-value">{{ stats.totalPatients }}</strong>
+      <span class="kpi-badge success">
+        <i class="fa-solid fa-arrow-up"></i>
+        +8%
+      </span>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background: #fef3c7; color: #f59e0b;">
+      <i class="fa-solid fa-pills"></i>
+    </div>
+    <div class="kpi-content">
+      <span class="kpi-label">Medicamentos</span>
+      <strong class="kpi-value">{{ stats.totalMedications }}</strong>
+      <span class="kpi-badge warning">
+        <i class="fa-solid fa-minus"></i>
+        0%
+      </span>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background: #fee2e2; color: #ef4444;">
+      <i class="fa-solid fa-building"></i>
+    </div>
+    <div class="kpi-content">
+      <span class="kpi-label">Proveedores</span>
+      <strong class="kpi-value">{{ stats.totalSuppliers }}</strong>
+      <span class="kpi-badge success">
+        <i class="fa-solid fa-arrow-up"></i>
+        +5%
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Access -->
+<div class="section-header">
+  <h3>Acceso Rápido</h3>
+  <p>Accede rápidamente a las funciones más utilizadas</p>
+</div>
+
+<div class="quick-access-grid">
+  <button class="quick-card" routerLink="/admin/users">
+    <div class="quick-icon" style="background: #eef2ff; color: #3b82f6;">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div class="quick-content">
+      <strong>Gestionar Usuarios</strong>
+      <span>Administrar usuarios del sistema</span>
+    </div>
+    <div class="quick-arrow">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
+  </button>
+
+  <button class="quick-card" routerLink="/admin/patients">
+    <div class="quick-icon" style="background: #dcfce7; color: #16a34a;">
+      <i class="fa-solid fa-user"></i>
+    </div>
+    <div class="quick-content">
+      <strong>Ver Pacientes</strong>
+      <span>Lista de pacientes registrados</span>
+    </div>
+    <div class="quick-arrow">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
+  </button>
+
+  <button class="quick-card" routerLink="/admin/medications">
+    <div class="quick-icon" style="background: #fef3c7; color: #f59e0b;">
+      <i class="fa-solid fa-pills"></i>
+    </div>
+    <div class="quick-content">
+      <strong>Medicamentos</strong>
+      <span>Inventario de farmacia</span>
+    </div>
+    <div class="quick-arrow">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
+  </button>
+
+  <button class="quick-card" routerLink="/admin/doctors">
+    <div class="quick-icon" style="background: #e0e7ff; color: #6366f1;">
+      <i class="fa-solid fa-user-doctor"></i>
+    </div>
+    <div class="quick-content">
+      <strong>Personal Médico</strong>
+      <span>Doctores y especialistas</span>
+    </div>
+    <div class="quick-arrow">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
+  </button>
+
+  <button class="quick-card" routerLink="/admin/suppliers">
+    <div class="quick-icon" style="background: #fee2e2; color: #ef4444;">
+      <i class="fa-solid fa-building"></i>
+    </div>
+    <div class="quick-content">
+      <strong>Proveedores</strong>
+      <span>Gestión de proveedores</span>
+    </div>
+    <div class="quick-arrow">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
+  </button>
+
+  <button class="quick-card" routerLink="/admin/products">
+    <div class="quick-icon" style="background: #ddd6fe; color: #8b5cf6;">
+      <i class="fa-solid fa-box"></i>
+    </div>
+    <div class="quick-content">
+      <strong>Productos</strong>
+      <span>Catálogo de productos</span>
+    </div>
+    <div class="quick-arrow">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
+  </button>
+</div>
+
+<!-- Activity List -->
+<div class="section-header">
+  <h3>Actividad Reciente</h3>
+  <p>Últimas acciones realizadas en el sistema</p>
+</div>
+
+<div class="activity-list">
+  <div class="activity-item">
+    <div class="activity-icon" style="background: #eef2ff; color: #3b82f6;">
+      <i class="fa-solid fa-user-plus"></i>
+    </div>
+    <div class="activity-content">
+      <strong>Nuevo usuario registrado</strong>
+      <span>Juan Pérez se registró en el sistema</span>
+    </div>
+    <span class="activity-time">Hace 5 min</span>
+  </div>
+
+  <div class="activity-item">
+    <div class="activity-icon" style="background: #dcfce7; color: #16a34a;">
+      <i class="fa-solid fa-file-medical"></i>
+    </div>
+    <div class="activity-content">
+      <strong>Paciente actualizado</strong>
+      <span>Se actualizó el historial médico</span>
+    </div>
+    <span class="activity-time">Hace 15 min</span>
+  </div>
+
+  <div class="activity-item">
+    <div class="activity-icon" style="background: #fef3c7; color: #f59e0b;">
+      <i class="fa-solid fa-pills"></i>
+    </div>
+    <div class="activity-content">
+      <strong>Stock actualizado</strong>
+      <span>Se agregaron 50 unidades de Paracetamol</span>
+    </div>
+    <span class="activity-time">Hace 1 hora</span>
+  </div>
+</div>

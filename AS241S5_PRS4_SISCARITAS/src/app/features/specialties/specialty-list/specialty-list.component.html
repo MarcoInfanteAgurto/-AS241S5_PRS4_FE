@@ -1,0 +1,296 @@
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-star"></i>
+      </div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Total Especialidades</span>
+      </div>
+    </div>
+
+    <div class="module-stat success">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-hands-helping"></i>
+      </div>
+      <div>
+        <strong>{{ stats.social }}</strong>
+        <span>Social</span>
+      </div>
+    </div>
+
+    <div class="module-stat warning">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-heartbeat"></i>
+      </div>
+      <div>
+        <strong>{{ stats.clinica }}</strong>
+        <span>Clínica</span>
+      </div>
+    </div>
+
+    <div class="module-stat money">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </div>
+      <div>
+        <strong>S/ {{ stats.presupuestoTotal.toLocaleString() }}</strong>
+        <span>Presupuesto Total</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar especialidad..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+
+      <div class="table-filter-select">
+        <span>Tipo</span>
+        <select [(ngModel)]="typeFilter" (change)="onTypeFilterChange(typeFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let type of typeOptions" [value]="type">
+            {{ getTypeLabel(type) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange(statusFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+
+      <button 
+        *ngIf="searchTerm || typeFilter !== 'all' || statusFilter !== 'all'"
+        class="btn btn-ghost" 
+        (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Especialidad
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Especialidad</th>
+            <th>Tipo</th>
+            <th>Presupuesto</th>
+            <th>Gastado</th>
+            <th>Color</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredSpecialties.length === 0">
+            <td colspan="8">
+              <div class="empty-state">
+                <p>No hay registros que coincidan con los filtros.</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let specialty of paginatedSpecialties">
+            <td>{{ specialty.specialtyCode }}</td>
+            <td>{{ specialty.specialtyName }}</td>
+            <td>
+              <span class="role-badge">{{ getTypeLabel(specialty.type) }}</span>
+            </td>
+            <td>S/ {{ specialty.budget.toLocaleString() }}</td>
+            <td>
+              <div class="budget-progress">
+                <span>S/ {{ specialty.spent.toLocaleString() }}</span>
+                <div class="progress-bar" *ngIf="specialty.budget > 0">
+                  <div 
+                    class="progress-fill" 
+                    [style.width.%]="getPercentageSpent(specialty)"
+                    [class.danger]="getPercentageSpent(specialty) > 90"
+                    [class.warning]="getPercentageSpent(specialty) > 70 && getPercentageSpent(specialty) <= 90">
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="color-indicator" [style.background-color]="specialty.color"></div>
+            </td>
+            <td>
+              <span [class]="'status-chip ' + (specialty.status === 'ACTIVE' ? 'success' : 'danger')">
+                {{ getStatusLabel(specialty.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button 
+                  class="row-menu-trigger" 
+                  (click)="toggleMenu(specialty.id)"
+                  title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === specialty.id">
+                  <button (click)="openEditModal(specialty)">
+                    <i class="fa-solid fa-edit"></i>
+                    Editar
+                  </button>
+                  <button>
+                    <i class="fa-solid fa-eye"></i>
+                    Ver detalle
+                  </button>
+                  <button class="danger" (click)="deleteSpecialty(specialty.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="table-footer-progress">
+          <div 
+            class="table-footer-progress-bar" 
+            [style.width.%]="(currentPage / totalPages) * 100">
+          </div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button 
+          *ngFor="let page of pages"
+          class="pagination-btn pagination-num"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          title="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">
+          {{ editingSpecialty ? 'Editar Especialidad' : 'Nueva Especialidad' }}
+        </span>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group">
+          <label>Código</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.specialtyCode"
+            placeholder="Ej: EDUC-001">
+        </div>
+        <div class="form-group">
+          <label>Nombre de la Especialidad</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.specialtyName"
+            placeholder="Ej: Educación">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select [(ngModel)]="formData.type">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let type of typeOptions" [value]="type">
+              {{ getTypeLabel(type) }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Presupuesto (S/)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="formData.budget"
+            placeholder="0.00"
+            step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Gastado (S/)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="formData.spent"
+            placeholder="0.00"
+            step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <input 
+            type="color" 
+            [(ngModel)]="formData.color"
+            class="color-picker">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="saveSpecialty()">
+          {{ editingSpecialty ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

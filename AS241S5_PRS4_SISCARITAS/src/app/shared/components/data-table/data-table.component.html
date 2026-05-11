@@ -1,0 +1,61 @@
+<div class="data-table-container">
+  <div class="table-loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <table class="data-table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th *ngFor="let column of columns" 
+            [class.sortable]="column.sortable"
+            (click)="onSort(column)">
+          {{ column.label }}
+          <span class="sort-icon" *ngIf="column.sortable && sortKey === column.key">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of paginatedData" (click)="onRowClick(row)" class="table-row">
+        <td *ngFor="let column of columns">
+          {{ row[column.key] }}
+        </td>
+      </tr>
+      <tr *ngIf="paginatedData.length === 0">
+        <td [attr.colspan]="columns.length" class="no-data">
+          No hay datos disponibles
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="table-pagination" *ngIf="!loading && totalPages > 1">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage === 1"
+      (click)="onPageChange(currentPage - 1)">
+      Anterior
+    </button>
+
+    <button 
+      *ngFor="let page of getPages()"
+      class="pagination-btn"
+      [class.active]="page === currentPage"
+      (click)="onPageChange(page)">
+      {{ page }}
+    </button>
+
+    <button 
+      class="pagination-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="onPageChange(currentPage + 1)">
+      Siguiente
+    </button>
+
+    <span class="pagination-info">
+      Página {{ currentPage }} de {{ totalPages }} ({{ totalItems }} registros)
+    </span>
+  </div>
+</div>

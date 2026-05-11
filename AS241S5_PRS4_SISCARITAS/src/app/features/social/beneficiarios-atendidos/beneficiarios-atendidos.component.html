@@ -1,0 +1,282 @@
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-list"></i>
+      </div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Total</span>
+      </div>
+    </div>
+
+    <div class="module-stat success">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-calendar-day"></i>
+      </div>
+      <div>
+        <strong>{{ stats.today }}</strong>
+        <span>Hoy</span>
+      </div>
+    </div>
+
+    <div class="module-stat warning">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-calendar-week"></i>
+      </div>
+      <div>
+        <strong>{{ stats.thisWeek }}</strong>
+        <span>Esta Semana</span>
+      </div>
+    </div>
+
+    <div class="module-stat money">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-calendar"></i>
+      </div>
+      <div>
+        <strong>{{ stats.thisMonth }}</strong>
+        <span>Este Mes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar beneficiarios..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange(statusFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="table-filter-select">
+        <span>Servicio</span>
+        <select [(ngModel)]="serviceFilter" (change)="onServiceFilterChange(serviceFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let service of serviceOptions" [value]="service">
+            {{ service }}
+          </option>
+        </select>
+      </div>
+
+      <button 
+        *ngIf="searchTerm || statusFilter !== 'all' || serviceFilter !== 'all'"
+        class="btn btn-ghost" 
+        (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Registro
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Atención</th>
+            <th>Beneficiario</th>
+            <th>DNI</th>
+            <th>Campaña</th>
+            <th>Cantidad</th>
+            <th>Entrega</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredBeneficiariosAtendidos.length === 0">
+            <td colspan="8">
+              <div class="empty-state">
+                <p>No hay registros que coincidan con los filtros.</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let beneficiario of paginatedBeneficiariosAtendidos">
+            <td>{{ beneficiario.distributionNumber || beneficiario.id }}</td>
+            <td>
+              <span class="person-cell">
+                <i>{{ getInitials(beneficiario.beneficiaryName || '') }}</i>
+                <span>{{ beneficiario.beneficiaryName || '-' }}</span>
+              </span>
+            </td>
+            <td>{{ beneficiario.beneficiaryDNI || beneficiario.dni || '-' }}</td>
+            <td>{{ beneficiario.campaignName || '-' }}</td>
+            <td>{{ beneficiario.totalQuantity || 0 }}</td>
+            <td>
+              <span [class]="'status-chip ' + (beneficiario.deliveryStatus === 'ENTREGADO' ? 'success' : 'warning')">
+                {{ beneficiario.deliveryStatus || 'PENDIENTE' }}
+              </span>
+            </td>
+            <td>{{ beneficiario.distributionDate || beneficiario.date || '-' }}</td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button 
+                  class="row-menu-trigger" 
+                  (click)="toggleMenu(beneficiario.id)"
+                  title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === beneficiario.id">
+                  <button (click)="openEditModal(beneficiario)">
+                    <i class="fa-solid fa-edit"></i>
+                    Editar
+                  </button>
+                  <button>
+                    <i class="fa-solid fa-eye"></i>
+                    Ver detalle
+                  </button>
+                  <button class="danger" (click)="deleteBeneficiario(beneficiario.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="table-footer-progress">
+          <div 
+            class="table-footer-progress-bar" 
+            [style.width.%]="(currentPage / totalPages) * 100">
+          </div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button 
+          *ngFor="let page of pages"
+          class="pagination-btn pagination-num"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          title="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">
+          {{ editingBeneficiario ? 'Editar Registro' : 'Nuevo Registro' }}
+        </span>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group">
+          <label>Nombre del Beneficiario</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.beneficiaryName"
+            placeholder="Nombre completo">
+        </div>
+        <div class="form-group">
+          <label>DNI</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.dni"
+            placeholder="DNI">
+        </div>
+        <div class="form-group">
+          <label>Servicio</label>
+          <select [(ngModel)]="formData.service">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let service of serviceOptions" [value]="service">
+              {{ service }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha</label>
+          <input 
+            type="date" 
+            [(ngModel)]="formData.date">
+        </div>
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.location"
+            placeholder="Ubicación">
+        </div>
+        <div class="form-group">
+          <label>Atendido Por</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.attendedBy"
+            placeholder="Nombre del responsable">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="saveBeneficiario()">
+          {{ editingBeneficiario ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

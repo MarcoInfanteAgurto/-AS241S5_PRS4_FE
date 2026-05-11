@@ -1,0 +1,247 @@
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-list"></i>
+      </div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Tratamientos</span>
+      </div>
+    </div>
+
+    <div class="module-stat success">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-check-circle"></i>
+      </div>
+      <div>
+        <strong>{{ stats.active }}</strong>
+        <span>Activos</span>
+      </div>
+    </div>
+
+    <div class="module-stat warning">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-times-circle"></i>
+      </div>
+      <div>
+        <strong>{{ stats.inactive }}</strong>
+        <span>Inactivos</span>
+      </div>
+    </div>
+
+    <div class="module-stat money">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </div>
+      <div>
+        <strong>S/ {{ stats.precioPromedio.toFixed(2) }}</strong>
+        <span>Precio Promedio</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar tratamientos..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange(statusFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+
+      <button 
+        *ngIf="searchTerm || statusFilter !== 'all'"
+        class="btn btn-ghost" 
+        (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo Tratamiento
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Especialidad</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredTratamientos.length === 0">
+            <td colspan="5">
+              <div class="empty-state">
+                <p>No hay registros que coincidan con los filtros.</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let tratamiento of paginatedTratamientos">
+            <td>{{ tratamiento.nombre }}</td>
+            <td>{{ tratamiento.specialty }}</td>
+            <td>S/ {{ tratamiento.precio.toFixed(2) }}</td>
+            <td>
+              <span [class]="'status-chip ' + (tratamiento.status === 'ACTIVE' ? 'success' : 'danger')">
+                {{ getStatusLabel(tratamiento.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button 
+                  class="row-menu-trigger" 
+                  (click)="toggleMenu(tratamiento.id)"
+                  title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === tratamiento.id">
+                  <button (click)="openEditModal(tratamiento)">
+                    <i class="fa-solid fa-edit"></i>
+                    Editar
+                  </button>
+                  <button>
+                    <i class="fa-solid fa-eye"></i>
+                    Ver detalle
+                  </button>
+                  <button class="danger" (click)="deleteTratamiento(tratamiento.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="table-footer-progress">
+          <div 
+            class="table-footer-progress-bar" 
+            [style.width.%]="(currentPage / totalPages) * 100">
+          </div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button 
+          *ngFor="let page of pages"
+          class="pagination-btn pagination-num"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          title="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">
+          {{ editingTratamiento ? 'Editar Tratamiento' : 'Nuevo Tratamiento' }}
+        </span>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.nombre"
+            placeholder="Nombre del tratamiento">
+        </div>
+        <div class="form-group">
+          <label>Especialidad</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.specialty"
+            placeholder="Especialidad">
+        </div>
+        <div class="form-group">
+          <label>Precio (S/)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="formData.precio"
+            placeholder="0.00"
+            step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.descripcion"
+            placeholder="Descripción">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="saveTratamiento()">
+          {{ editingTratamiento ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

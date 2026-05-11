@@ -1,0 +1,11 @@
+<div class="app-shell">
+  <app-sidebar></app-sidebar>
+  
+  <div class="main-wrapper" [class.panel-open]="panelOpen$ | async">
+    <app-navbar></app-navbar>
+    
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

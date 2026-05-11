@@ -1,0 +1,52 @@
+.public-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+}
+
+.public-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.public-brand {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+
+  h1 {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+}
+
+.public-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
+}
+
+@media (max-width: 576px) {
+  .public-layout {
+    padding: 1rem;
+  }
+
+  .public-brand h1 {
+    font-size: 2rem;
+  }
+
+  .public-content {
+    padding: 1.5rem;
+  }
+}

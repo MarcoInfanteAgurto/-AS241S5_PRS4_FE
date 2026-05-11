@@ -1,0 +1,297 @@
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-list"></i>
+      </div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Donaciones</span>
+      </div>
+    </div>
+
+    <div class="module-stat money">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </div>
+      <div>
+        <strong>{{ formatCurrency(stats.monetary) }}</strong>
+        <span>Monetarias</span>
+      </div>
+    </div>
+
+    <div class="module-stat success">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-box"></i>
+      </div>
+      <div>
+        <strong>{{ stats.inKind }}</strong>
+        <span>En Especie</span>
+      </div>
+    </div>
+
+    <div class="module-stat warning">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-calendar"></i>
+      </div>
+      <div>
+        <strong>{{ stats.thisMonth }}</strong>
+        <span>Este Mes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar donaciones..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange(statusFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="table-filter-select">
+        <span>Tipo</span>
+        <select [(ngModel)]="typeFilter" (change)="onTypeFilterChange(typeFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let type of typeOptions" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+      </div>
+
+      <button 
+        *ngIf="searchTerm || statusFilter !== 'all' || typeFilter !== 'all'"
+        class="btn btn-ghost" 
+        (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Donación
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Donante</th>
+            <th>Tipo</th>
+            <th>Campaña</th>
+            <th>Valor</th>
+            <th>Recibo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredDonaciones.length === 0">
+            <td colspan="8">
+              <div class="empty-state">
+                <p>No hay registros que coincidan con los filtros.</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let donacion of paginatedDonaciones">
+            <td>{{ donacion.id }}</td>
+            <td>
+              <span class="person-cell">
+                <i>{{ getInitials(donacion.donor || donacion.donorName || '') }}</i>
+                <span>{{ donacion.donor || donacion.donorName || '-' }}</span>
+              </span>
+            </td>
+            <td>
+              <span class="role-badge">{{ donacion.donationType || donacion.type || '-' }}</span>
+            </td>
+            <td>{{ donacion.campaign || '-' }}</td>
+            <td>{{ formatCurrency(donacion.estimatedValue || donacion.amount || 0) }}</td>
+            <td>
+              <span [class]="'status-chip ' + (donacion.receiptIssued ? 'success' : 'warning')">
+                {{ donacion.receiptIssued ? 'Sí' : 'No' }}
+              </span>
+            </td>
+            <td>
+              <span [class]="'status-chip ' + (donacion.status === 'RECEIVED' ? 'success' : donacion.status === 'PROCESSED' ? 'info' : 'warning')">
+                {{ getStatusLabel(donacion.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button 
+                  class="row-menu-trigger" 
+                  (click)="toggleMenu(donacion.id)"
+                  title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === donacion.id">
+                  <button (click)="openEditModal(donacion)">
+                    <i class="fa-solid fa-edit"></i>
+                    Editar
+                  </button>
+                  <button>
+                    <i class="fa-solid fa-eye"></i>
+                    Ver detalle
+                  </button>
+                  <button class="danger" (click)="deleteDonacion(donacion.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="table-footer-progress">
+          <div 
+            class="table-footer-progress-bar" 
+            [style.width.%]="(currentPage / totalPages) * 100">
+          </div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button 
+          *ngFor="let page of pages"
+          class="pagination-btn pagination-num"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          title="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">
+          {{ editingDonacion ? 'Editar Donación' : 'Nueva Donación' }}
+        </span>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group">
+          <label>Nombre del Donante</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.donorName"
+            placeholder="Nombre del donante">
+        </div>
+        <div class="form-group">
+          <label>Tipo de Donante</label>
+          <select [(ngModel)]="formData.donorType">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let donorType of donorTypeOptions" [value]="donorType">
+              {{ donorType }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de Donación</label>
+          <select [(ngModel)]="formData.type">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let type of typeOptions" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha</label>
+          <input 
+            type="date" 
+            [(ngModel)]="formData.date">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Descripción</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.description"
+            placeholder="Descripción de la donación">
+        </div>
+        <div class="form-group" *ngIf="formData.type === 'Monetaria'">
+          <label>Monto (S/)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="formData.amount"
+            placeholder="0.00">
+        </div>
+        <div class="form-group" *ngIf="formData.type !== 'Monetaria'">
+          <label>Cantidad</label>
+          <input 
+            type="number" 
+            [(ngModel)]="formData.quantity"
+            placeholder="Cantidad">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="saveDonacion()">
+          {{ editingDonacion ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="module-page">
+  <!-- Filters Bar -->
+  <div class="module-filters-bar" *ngIf="config.showFilters || config.showSearch">
+    <div class="module-filters-left">
+      <!-- Search -->
+      <div class="table-search" *ngIf="config.showSearch">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar..." 
+          (input)="onSearch($event)"
+          [value]="searchTerm">
+      </div>
+
+      <!-- Filter Buttons -->
+      <button 
+        class="btn btn-sm btn-ghost"
+        [class.active-filter]="selectedFilter === 'all'"
+        (click)="onFilterChange('all')">
+        <i class="fa-solid fa-list"></i>
+        Todos
+      </button>
+
+      <button 
+        class="btn btn-sm btn-ghost"
+        [class.active-filter]="selectedFilter === 'active'"
+        (click)="onFilterChange('active')">
+        <i class="fa-solid fa-check-circle"></i>
+        Activos
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <!-- Export Button -->
+      <button class="btn btn-sm btn-ghost" (click)="onExport()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+
+      <!-- Add Button -->
+      <button class="btn btn-sm btn-primary" *ngIf="config.showAddButton" (click)="onAdd()">
+        <i class="fa-solid fa-plus"></i>
+        {{ config.addButtonLabel || 'Agregar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Slot -->
+  <div class="module-content">
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Empty State (shown when no content) -->
+  <div class="empty-state" *ngIf="!searchTerm">
+    <i class="fa-solid" [ngClass]="config.icon" style="font-size: 48px; color: var(--text-light); margin-bottom: 16px;"></i>
+    <p>No hay datos disponibles</p>
+    <p style="font-size: 12px;">Los datos se cargarán cuando se conecte con el backend</p>
+  </div>
+</div>

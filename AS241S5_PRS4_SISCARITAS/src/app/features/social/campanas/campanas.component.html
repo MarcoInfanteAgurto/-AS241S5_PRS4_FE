@@ -1,0 +1,282 @@
+<div class="module-page">
+  <!-- Stats Cards -->
+  <div class="module-stats-grid">
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-list"></i>
+      </div>
+      <div>
+        <strong>{{ stats.total }}</strong>
+        <span>Campañas</span>
+      </div>
+    </div>
+
+    <div class="module-stat success">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-check-circle"></i>
+      </div>
+      <div>
+        <strong>{{ stats.active }}</strong>
+        <span>Activas</span>
+      </div>
+    </div>
+
+    <div class="module-stat info">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-flag-checkered"></i>
+      </div>
+      <div>
+        <strong>{{ stats.completed }}</strong>
+        <span>Completadas</span>
+      </div>
+    </div>
+
+    <div class="module-stat warning">
+      <div class="module-stat-icon">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div>
+        <strong>{{ stats.attendees }}</strong>
+        <span>Asistentes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Bar -->
+  <div class="module-filters-bar">
+    <div class="module-filters-left">
+      <div class="table-search">
+        <i class="fa-solid fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Buscar campañas..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+
+      <div class="table-filter-select">
+        <span>Estado</span>
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange(statusFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ getStatusLabel(status) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="table-filter-select">
+        <span>Tipo</span>
+        <select [(ngModel)]="typeFilter" (change)="onTypeFilterChange(typeFilter)">
+          <option value="all">Todos</option>
+          <option *ngFor="let type of typeOptions" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+      </div>
+
+      <button 
+        *ngIf="searchTerm || statusFilter !== 'all' || typeFilter !== 'all'"
+        class="btn btn-ghost" 
+        (click)="clearFilters()">
+        <i class="fa-solid fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+
+    <div class="module-filters-right">
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="fa-solid fa-download"></i>
+        Exportar
+      </button>
+      <button class="btn btn-primary table-primary-action" (click)="openAddModal()">
+        <i class="fa-solid fa-plus"></i>
+        Nueva Campaña
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="data-table-wrap modern-table">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Campaña</th>
+            <th>Dominio</th>
+            <th>Lugar</th>
+            <th>Avance</th>
+            <th>Ejecución</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="filteredCampanas.length === 0">
+            <td colspan="8">
+              <div class="empty-state">
+                <p>No hay registros que coincidan con los filtros.</p>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let campana of paginatedCampanas">
+            <td>{{ campana.campaignNumber || campana.code || '-' }}</td>
+            <td><strong>{{ campana.name || campana.campaignName }}</strong></td>
+            <td>
+              <span class="role-badge">{{ campana.domain || campana.type || '-' }}</span>
+            </td>
+            <td>{{ campana.location || '-' }}</td>
+            <td>
+              <span class="role-badge">{{ campana.progress || '0%' }}</span>
+            </td>
+            <td>
+              <span class="role-badge">{{ campana.budgetUse || '0%' }}</span>
+            </td>
+            <td>
+              <span [class]="'status-chip ' + (campana.status === 'ACTIVE' ? 'success' : campana.status === 'COMPLETED' ? 'info' : campana.status === 'CANCELLED' ? 'danger' : 'warning')">
+                {{ getStatusLabel(campana.status) }}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="row-menu-wrap">
+                <button 
+                  class="row-menu-trigger" 
+                  (click)="toggleMenu(campana.id)"
+                  title="Opciones">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="row-menu" *ngIf="openMenuId === campana.id">
+                  <button (click)="openEditModal(campana)">
+                    <i class="fa-solid fa-edit"></i>
+                    Editar
+                  </button>
+                  <button>
+                    <i class="fa-solid fa-eye"></i>
+                    Ver detalle
+                  </button>
+                  <button class="danger" (click)="deleteCampana(campana.id)">
+                    <i class="fa-solid fa-trash"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer with Pagination -->
+    <div class="table-footer">
+      <div class="table-footer-info">
+        <span class="table-footer-label">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="table-footer-progress">
+          <div 
+            class="table-footer-progress-bar" 
+            [style.width.%]="(currentPage / totalPages) * 100">
+          </div>
+        </div>
+      </div>
+      <div class="table-pagination">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+          title="Anterior">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button 
+          *ngFor="let page of pages"
+          class="pagination-btn pagination-num"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+          title="Siguiente">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-title">
+          {{ editingCampana ? 'Editar Campaña' : 'Nueva Campaña' }}
+        </span>
+        <button class="modal-close" (click)="closeModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>Nombre de la Campaña</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.name"
+            placeholder="Nombre de la campaña">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select [(ngModel)]="formData.type">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let type of typeOptions" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Ubicación</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.location"
+            placeholder="Ubicación">
+        </div>
+        <div class="form-group">
+          <label>Fecha Inicio</label>
+          <input 
+            type="date" 
+            [(ngModel)]="formData.startDate">
+        </div>
+        <div class="form-group">
+          <label>Fecha Fin</label>
+          <input 
+            type="date" 
+            [(ngModel)]="formData.endDate">
+        </div>
+        <div class="form-group">
+          <label>Responsable</label>
+          <input 
+            type="text" 
+            [(ngModel)]="formData.responsible"
+            placeholder="Responsable">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select [(ngModel)]="formData.status">
+            <option value="">Seleccionar...</option>
+            <option *ngFor="let status of statusOptions" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="saveCampana()">
+          {{ editingCampana ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<header class="top-header">
+  <div class="header-title-block">
+    <div class="header-title-icon">
+      <i class="fa-solid fa-house"></i>
+    </div>
+    <div>
+      <h2 class="header-title">{{ pageTitle }}</h2>
+      <span class="header-subtitle" *ngIf="pageSubtitle">{{ pageSubtitle }}</span>
+    </div>
+  </div>
+  
+  <div class="header-spacer"></div>
+  
+  <div class="header-actions">
+    <button class="header-btn" title="Notificaciones">
+      <i class="fa-solid fa-bell"></i>
+      <span class="badge"></span>
+    </button>
+    <div class="date-chip">
+      <i class="fa-solid fa-calendar"></i>
+      {{ currentDate }}
+    </div>
+  </div>
+</header>
